@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Hello from carriers.html</h1>
+    <h2>{{ airport.name }}</h2>
+    <h4>Average carrier delay: {{ avg_cd }}</h4>
+    <h4>Median carrier delay: {{ median_cd }}</h4>
+    <h4>Standard div carrier delay: {{ std_cd }}</h4>
+    <h4>Average late aircraft: {{ avg_la }}</h4>
+    <h4>Median late aircraft: {{ median_la }}</h4>
+    <h4>Standard div late aircraft: {{ std_la }}</h4>
+    {% block content %}
+    <ul>
+        <li>Name --- Code --- Averade delay --- Median delay --- Standard div  --- Average Late Aircraft --- Median Late Aircraft --- Standard div</li>
+        {% for carrier in carriers %}
+            <li><a href="/airports/carriers/{{airport.code}}/{{ carrier.carrier.code }}">
+                {{ carrier.carrier.name }}</a> {{ carrier.carrier.code }} {{ carrier.avg_cd }} {{ carrier.median_cd }} {{ carrier.std_cd }}
+                {{ carrier.avg_la }} {{ carrier.median_la }} {{ carrier.std_la }}
+            </li>
+        {% endfor %}
+    </ul>
+    {% endblock %}
+</body>
+</html>
