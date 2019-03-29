@@ -1,5 +1,6 @@
-from django.shortcuts import render
 from django.http import HttpResponse
+from django.shortcuts import render
+import pymysql
 # Create your views here.
 
 from airports.models import Airports
@@ -8,9 +9,7 @@ from airports.models import AirportCarriers
 from airports.models import Flights
 from airports.models import MinutesDelayed
 from airports.models import Delays
-from django.db.models import Avg
-from django.db.models import Max
-from django.db.models import Min
+from airports.models import UpdateForm
 
 
 import datetime
@@ -24,6 +23,7 @@ def index(request):
     }
 
     return render(request, 'airports/index.html', context)
+
 
 def calcAvgMedStd(delays):
     avg_cd = 0
@@ -47,7 +47,6 @@ def calcAvgMedStd(delays):
     else:
         std_cd = statistics.stdev(carrier_d)
 
-
     avg_cd = round(avg_cd)
     avg_la = round(avg_la)
     i = round(len(delays) / 2)
@@ -67,16 +66,13 @@ def calcAvgMedStd(delays):
     }
     return json
 
-
 def carriers(request,code):
     airport = Airports.objects.get(code = code)
     airport_carriers = AirportCarriers.objects.filter(airport = code)
     carrier = []
 
-
     delays = Delays.objects.filter(airport = code).order_by('carrier_delay')
     mem = calcAvgMedStd(delays)
-
 
     for item in airport_carriers:
         delays = Delays.objects.filter(airport=code, carrier = item.carrier).order_by('carrier_delay')
@@ -112,13 +108,14 @@ def carriers(request,code):
         "avg_cd": mem['avg_cd'],
         "median_cd": mem['median_cd'],
         "median_la": mem['median_la'],
+
         "std_la": mem['std_la'],
         "std_cd": mem['std_cd']
     }
     return render(request, 'airports/carriers.html', context)
 
 
-def details(request,a_code,c_code):
+def details(request, a_code, c_code):
     airport = Airports.objects.get(code = a_code)
     carrier = Carriers.objects.get(code = c_code)
     temp = Flights.objects.filter(airport = a_code, carrier = c_code).order_by('date')
@@ -135,7 +132,6 @@ def details(request,a_code,c_code):
     else:
         max_date = str(max_year) + "-" + str(max_month)
 
-
     context = {
         'airport': airport,
         'carrier': carrier,
@@ -144,15 +140,15 @@ def details(request,a_code,c_code):
     }
     return render(request, 'airports/details.html', context)
 
-def monthly(request,a_code,c_code,month,year):
+
+def monthly(request, a_code, c_code, month, year):
     date = datetime.datetime(int(year),int(month),1)
-    flight  = Flights.objects.get(airport=a_code,carrier=c_code,date=date)
-    print(flight.on_time)
+    flight = Flights.objects.get(airport=a_code,carrier=c_code,date=date)
     flights_total = Flights.objects.filter(airport=a_code, carrier=c_code)
     mdasm = MinutesDelayed.objects.get(airport=a_code, carrier=c_code, date=date)
     total_mdasm = MinutesDelayed.objects.filter(airport=a_code, carrier=c_code)
-    total_cdasc = 0                 #total_carrierdelay_airport_specific_carrier
-    total_cdasla = 0                #total_carrierdelay_airport_specific_late_aircraft
+    total_cdasc = 0                 # total_carrierdelay_airport_specific_carrier
+    total_cdasla = 0                # total_carrierdelay_airport_specific_late_aircraft
     total_cdas_weather = 0
     total_cdas_security = 0
     total_cdas_nas = 0
@@ -183,8 +179,6 @@ def monthly(request,a_code,c_code,month,year):
         md_nas += item.nas
         md_total += item.total
 
-    print(md_security,md_nas)
-
     for item in total_md:
         total_md_carrier_delay += item.carrier_delay
         total_md_late_aircraft += item.late_aircraft
@@ -200,7 +194,6 @@ def monthly(request,a_code,c_code,month,year):
         total_cdas_security += item.security
         total_cdas_nas += item.nas
         total_cdas_total += item.total
-
 
     total_on_time = 0
     total_delayed = 0
@@ -237,3 +230,79 @@ def monthly(request,a_code,c_code,month,year):
     }
 
     return render(request, 'airports/monthly.html', context)
+
+
+def options(request, a_code, c_code, month, year):
+    date = datetime.datetime(int(year), int(month), 1)
+    flight = Flights.objects.get(airport=a_code, carrier=c_code, date=date)
+
+    context = {
+        "airport_code": a_code,
+        "carrier_code": c_code,
+        "month": month,
+        "year": year,
+        "flight": flight
+    }
+
+    return render(request, "airports/options.html", context)
+
+
+def delete(request, a_code, c_code, id):
+    # connect to MySQL
+    con = pymysql.connect(host='localhost', user='root', passwd='', db='web_eng')
+    cursor = con.cursor()
+
+    if request.method == "POST":
+
+        context = {
+            "airport_code": a_code,
+            "carrier_code": c_code
+        }
+
+        query = """DELETE FROM `airports_flights` WHERE `id`= %s"""
+        cursor.execute(query, int(id))
+        print("sono qui")
+
+    con.commit()
+    con.close()
+
+    return render(request, "airports/finish.html", context)
+
+
+def update(request, a_code, c_code, id):
+    # connect to MySQL
+    con = pymysql.connect(host='localhost', user='root', passwd='', db='web_eng')
+    cursor = con.cursor()
+
+    if request.method == "POST":
+        arg_request = {
+
+            'airport_code': a_code,
+            'carrier_code': c_code,
+            'id': int(id),
+            'cancelled': int(request.POST.get('Cancelled')),
+            'on_time': int(request.POST.get('On time')),
+            'total': 0,
+            'delayed': int(request.POST.get('Delayed')),
+            'diverted': int(request.POST.get('Diverted'))
+
+        }
+
+        arg_request['total'] = arg_request['cancelled'] + arg_request['on_time'] + arg_request['delayed'] + arg_request['diverted']
+
+        on_time = arg_request['on_time']
+        total = arg_request['total']
+        delayed = arg_request['delayed']
+        diverted = arg_request['diverted']
+        id = arg_request['id']
+        cancelled = arg_request['cancelled']
+
+        query = """UPDATE `airports_flights` SET `cancelled`= '%s',`on_time`= '%s',`total`= '%s',`delayed`= '%s',
+                                `diverted`= '%s' WHERE `id` = '%s'"""
+
+        cursor.execute(query, (cancelled, on_time, total, delayed, diverted, id))
+
+        con.commit()
+        con.close()
+
+    return render(request,"airports/finish.html",arg_request)

@@ -1,0 +1,5 @@
+Code/WebAPI/venv
+Code/WebAPI/airports/migrations
+Code/WebAPI/airports/__pycache__
+Code/WebAPI/carriers/migrations
+Code/WebAPI/carriers/__pycache__

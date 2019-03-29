@@ -3,6 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+h4 {
+font-family: arial, sans-serif;
+font-weight: 300;
+font-size: 16px;
+line-height: 1.4em;
+color: #404040;
+}
+h1 {
+font-family: arial, sans-serif;
+font-weight: 300;
+font-size: 26px;
+line-height: 1.4em;
+color: #404040;
+}
+h2 {
+font-family: arial, sans-serif;
+font-weight: 400;
+font-size: 20px;
+line-height: 1.4em;
+color: #404043;
+}
+  table {
+font-family: arial, sans-serif;
+border-collapse: collapse;
+width: 100%;
+}
+#carriers td{
+border: 3px solid #dddddd;
+text-align: center;
+padding: 8px;
+}
+
+#carriers th {
+padding-top: 12px;
+padding-bottom: 12px;
+text-align: left;
+background-color: #4CAF50;
+color: white;
+}
+
+tr:nth-child(even) {
+background-color: #dddddd;
+}
+</style>
 </head>
 <body>
     <h1>Hello from carriers.html</h1>
@@ -14,15 +59,21 @@
     <h4>Median late aircraft: {{ median_la }}</h4>
     <h4>Standard div late aircraft: {{ std_la }}</h4>
     {% block content %}
-    <ul>
-        <li>Name --- Code --- Averade delay --- Median delay --- Standard div  --- Average Late Aircraft --- Median Late Aircraft --- Standard div</li>
-        {% for carrier in carriers %}
-            <li><a href="/airports/carriers/{{airport.code}}/{{ carrier.carrier.code }}">
-                {{ carrier.carrier.name }}</a> {{ carrier.carrier.code }} {{ carrier.avg_cd }} {{ carrier.median_cd }} {{ carrier.std_cd }}
-                {{ carrier.avg_la }} {{ carrier.median_la }} {{ carrier.std_la }}
-            </li>
-        {% endfor %}
-    </ul>
+    <table id=carriers>
+    <table>
+      <thead>
+      <tr><th>Name</th><th>Code</th><th>Average delay</th><th>Median delay</th><th>Standard div</th><th>Average Late Aircraft</th><th>Median Late Aircraft</th><th>Standard div</th></tr>
+      </thead>
+
+      <tbody>
+      {% for carrier in carriers %}
+          <tr><td><a href="/airports/carriers/{{airport.code}}/{{ carrier.carrier.code }}">
+              {{ carrier.carrier.name }}</a></td> <td>{{ carrier.carrier.code }}</td><td> {{ carrier.avg_cd }}</td><td> {{ carrier.median_cd }} </td><td> {{ carrier.std_cd }}</td>
+              <td>{{ carrier.avg_la }}</td><td> {{ carrier.median_la }}</td><td> {{ carrier.std_la }}</td>
+          </tr>
+      {% endfor %}
+    </tbody>
+    </table>
     {% endblock %}
 </body>
 </html>
