@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<style>
+.left {
+  float: left;
+  width: 64%;
+}
+
+.right {
+  float: right;
+  width: 35%;
+}
+</style>
+</head>
+<body>
+    <div id="delete" class="right">
+        <h2>Delete Statistics</h2>
+        <input type="button" value="Delete" formmethod="post" onclick="deleteStats()" id="delete_button">
+    </div>
+    <div id="update" class="left">
+        <h2>Update Statistics</h2>
+            {{ form.errors }}
+            {{ form.non_field_errors }}
+                <form id="myForm" typeof="submit" method="post" name="update_form" >{% csrf_token %}
+                Cancelled:<br>
+                <input type="number" name="Cancelled" id="Cancelled" value="{{ flight.cancelled }}">
+                <br>
+                On time:<br>
+                <input type="number" name="On time" id="On_time" value="{{  flight.on_time }}">
+                <br>
+                Diverted:<br>
+                <input type="number" name="Diverted" id="Diverted" value="{{ flight.diverted }}">
+                <br>
+                Delayed:<br>
+                <input type="number" name="Delayed" id="Delayed" value="{{  flight.delayed }}">
+                <br>
+                <br>
+                <input type="submit" onclick="alert('Statistics Updated')" formmethod="post" value="Update" id="update_button">
+                <br>
+                <br>
+                <br>
+        </form>
+    </div>
+    <script>
+        function deleteStats() {
+            const flight_id = "{{ flight.id }}";
+            var path = "delete/";
+            path = path.concat(flight_id);
+            path = path.concat("/");
+
+            document.getElementById("myForm").action = path;
+            document.getElementById("myForm").submit();
+
+
+            document.getElementById("update").innerHTML = "Statistics Deleted!";
+        }
+        document.getElementById("update_button").onclick = function() {updateStats()};
+        function updateStats() {
+            var cancelled = document.getElementById("Cancelled").value;
+            var on_time = document.getElementById("On_time").value;
+            var diverted = document.getElementById("Diverted").value;
+            var delayed = document.getElementById("Delayed").value;
+
+            var path = "update/";
+            path = path.concat("{{ flight.id }}");
+            path = path.concat("/");
+            path = path.concat("?cancelled=");
+            path = path.concat(cancelled);
+            path = path.concat("&on_time=");
+            path = path.concat(on_time);
+            path = path.concat("&delayed=");
+            path = path.concat(delayed);
+            path = path.concat("&diverted=");
+            path = path.concat(diverted);
+
+            document.getElementById("myForm").action = path;
+            document.getElementById("myForm").submit();
+
+            return path;
+        }
+    </script>
+</body>
+</html>
