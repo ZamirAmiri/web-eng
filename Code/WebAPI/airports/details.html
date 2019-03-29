@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body onload="load()">
+    <script>
+        function load() {
+          $('#content').load("date/1/2000");
+        }
+    </script>
+    <h1>Hello from details.html</h1>
+    <h2>{{ airport.name }}</h2>
+    <h3>{{ carrier.name }}</h3>
+    <input type="month" name="month" id="date" max="{{ max_date }}" min="{{ min_date }}">
+    <button id="submit">Submit</button>
+
+    <div id="content"></div>
+    </br>
+    </br>
+    <div>Note the values between () are the total values of all available months</div>
+    </br>
+    <div id="buttons"></div>
+
+   <script>
+    document.getElementById("submit").onclick = function() {getNewDate()};
+    function getNewDate() {
+        var input = new Date(document.getElementById("date").value);
+        var month = (input.getMonth()+1).toString();
+        var year  = input.getFullYear();
+        month = month.concat("/");
+        month = month.concat(year.toString());
+        $('#content').load("date/".concat(month));
+        $('#buttons').load("options/".concat(month));
+    }
+    document.getElementById("create_button").onclick = function()  {createStats()};
+    function createStats() {
+        var airport_code= document.getElementById("Airport_code").value;
+        var carrier_code = document.getElementById("Carrier_code").value;
+        var date = new Date(document.getElementById("Form_date").value);
+        var cancelled = document.getElementById("Cancelled").value;
+        var on_time = document.getElementById("On_time").value;
+        var diverted = document.getElementById("Diverted").value;
+        var delayed = document.getElementById("Delayed").value;
+
+        var month = (date.getMonth()+1).toString();
+        var year  = date.getFullYear();
+        month = month.concat("/");
+        month = month.concat(year.toString());
+
+        var path = path.concat(month);
+        path = path.concat("/");
+        path = path.concat("?airport_code=");
+        path = path.concat(airport_code);
+        path = path.concat("&carrier_code=");
+        path = path.concat(carrier_code);
+        path = path.concat("&cancelled=");
+        path = path.concat(cancelled);
+        path = path.concat("&on_time=");
+        path = path.concat(on_time);
+        path = path.concat("&delayed=");
+        path = path.concat(delayed);
+        path = path.concat("&diverted=");
+        path = path.concat(diverted);
+
+        $('#content').load("create/".concat(path));
+
+        return path;
+    }
+   </script>
+
+</body>
+</html>
