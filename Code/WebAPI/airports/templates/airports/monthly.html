@@ -1,0 +1,59 @@
+<tr>
+    <th>On time</th>
+    <th>Delayed</th>
+    <th>Cancelled flights</th>
+</tr>
+{% block content %}
+<tr width="100%">
+    <th>{{ flight.on_time }}    ({{ total_on_time }})</th>
+    <th>{{ flight.delayed }}    ({{ total_delayed }})</th>
+    <th>{{ flight.cancelled }}  ({{ total_cancelled }})</th>
+</tr>
+
+    <tr><th>Minutes delayed Carrier specific on this airport</th></tr>
+
+<tr>
+    <th>Late aircraft</th>
+    <th>Carrier</th>
+</tr>
+<tr>
+    <th>{{ cdasm.late_aircraft }}   ({{ total_cdasc }})</th>
+    <th>{{ cdasm.carrier_delay }}   ({{ total_cdasla }})</th>
+</tr>
+    <tr><th>Minutes delayed Carrier specific for all aiports</th></tr>
+<tr>
+    <th>Late aircraft</th>
+    <th>Carrier</th>
+</tr>
+<tr>
+    <th>{{ md_la }} ({{ total_md_la }})</th>
+    <th>{{ md_cd }} ({{ total_md_cd }})</th>
+</tr>
+    <tr><th>Other stats this carrier this airport </th></tr>
+<tr>
+    <th>Weather</th>
+    <th>Security</th>
+    <th>National Aviation System</th>
+    <th>Total</th>
+</tr>
+<tr width="100%">
+    <th>{{ cdasm.weather }}     ({{ total_cdas_weather }})</th>
+    <th>{{ cdasm.security }}    ({{ total_cdas_security }})</th>
+    <th>{{ cdasm.nas }}     ({{ total_cdas_nas }})</th>
+    <th>{{ cdasm.total }}   ({{ total_cdas_total}})</th>
+</tr>
+<tr><th>Other stats this carrier for all airports</th></tr>
+<tr>
+    <th>Weather</th>
+    <th>Security</th>
+    <th>National Aviation System</th>
+    <th>Total</th>
+</tr>
+<tr width="100%">
+    <th>{{ md_weather }}     ({{ total_md_weather }})</th>
+    <th>{{ md_security }}    ({{ total_md_security }})</th>
+    <th>{{ md_nas }}     ({{ total_md_nas }})</th>
+    <th>{{ md_total }}   ({{ total_md_total}})</th>
+</tr>
+
+{% endblock %}
